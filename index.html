@@ -35,7 +35,7 @@
         </main>
     </div>
 
-    <script type="module">
+    <script>
         // COLOCA TU API KEY AQUÍ ABAJO ENTRE LAS COMILLAS
         const API_KEY = "AIzaSyBTq2H7XOpjOS3fcylVYwBYOv-CwGGvuUE"; 
 
@@ -80,6 +80,10 @@
         document.getElementById('user-input').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') sendMessage();
         });
+        window.sendMessage = sendMessage;
+        document.getElementById('user-input').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendMessage();
+});
     </script>
 </body>
 </html>
