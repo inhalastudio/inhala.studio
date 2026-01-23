@@ -1,40 +1,75 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inhala - Marketing Consciente</title>
+    <title>Inhala Studio | IA</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Montserrat', sans-serif;
-        }
-        h1, h2, h3, h4, .font-serif {
-            font-family: 'Cormorant Garamond', serif;
-        }
-        .bg-primary { background-color: #50b2b6; }
-        .text-primary { color: #50b2b6; }
-        .border-primary { border-color: #50b2b6; }
-        .bg-secondary { background-color: #5de0e5; }
-        .text-secondary { color: #5de0e5; }
-        .hover-primary:hover { background-color: #45a1a5; }
-        .smooth-scroll { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; background-color: #050505; color: white; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
     </style>
-<script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@^19.2.3",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
-  }
-}
-</script>
 </head>
-<body class="bg-stone-50 text-stone-800 smooth-scroll">
-    <div id="root"></div>
+<body class="min-h-screen flex flex-col items-center justify-center p-6">
+    <div class="max-w-2xl w-full text-center space-y-8">
+        <h1 class="text-5xl font-extralight tracking-tighter">inhala<span class="font-semibold">.studio</span></h1>
+        <main class="glass p-6 rounded-3xl shadow-2xl">
+            <div id="chat-box" class="h-80 overflow-y-auto text-left mb-6 space-y-4 p-2 text-stone-300">
+                <p class="italic text-stone-500 text-sm">Conexión establecida. Lista para inhalar ideas.</p>
+            </div>
+            <div class="relative flex gap-2">
+                <input type="text" id="user-input" placeholder="Escribe un mensaje..." 
+                    class="w-full bg-white/5 border border-white/10 rounded-full py-4 px-6 focus:outline-none">
+                <button onclick="sendMessage()" class="bg-white text-black px-8 py-2 rounded-full font-bold hover:bg-stone-200">
+                    Enviar
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_KEY = "AIzaSyBTq2H7XOpjOS3fcy lVYwBYOv-CwGGvuUE"; // Tu clave de la captura 22.20.59
+
+        async function sendMessage() {
+            const input = document.getElementById('user-input');
+            const box = document.getElementById('chat-box');
+            const message = input.value.trim();
+            if (!message) return;
+
+            box.innerHTML += `<div class="text-right"><p class="inline-block bg-white/10 p-3 rounded-2xl mb-2 text-white text-sm">${message}</p></div>`;
+            input.value = '';
+            
+            const loadingId = "loading-" + Date.now();
+            box.innerHTML += `<p id="${loadingId}" class="text-stone-500 italic text-sm animate-pulse">Inhala está pensando...</p>`;
+            box.scrollTop = box.scrollHeight;
+
+            try {
+                // Usamos el modelo Gemini 1.5 Flash que es el más compatible (v1 estable)
+                const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY.replace(/\s/g, '')}`;
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: message }] }]
+                    })
+                });
+
+                const data = await response.json();
+                if (data.error) throw new Error(data.error.message);
+
+                const aiText = data.candidates[0].content.parts[0].text;
+                document.getElementById(loadingId).remove();
+                box.innerHTML += `<div class="text-left"><p class="inline-block bg-stone-800 p-3 rounded-2xl mb-4 text-stone-200 text-sm">${aiText}</p></div>`;
+            } catch (error) {
+                document.getElementById(loadingId).innerText = "Error: " + error.message;
+            }
+            box.scrollTop = box.scrollHeight;
+        }
+
+        window.sendMessage = sendMessage;
+        document.getElementById('user-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+    </script>
 </body>
 </html>
