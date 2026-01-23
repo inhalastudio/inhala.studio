@@ -16,12 +16,12 @@
         <h1 class="text-5xl font-extralight tracking-tighter">inhala<span class="font-semibold">.studio</span></h1>
         <main class="glass p-6 rounded-3xl shadow-2xl">
             <div id="chat-box" class="h-80 overflow-y-auto text-left mb-6 space-y-4 p-2 text-stone-300">
-                <p class="italic text-stone-500 text-sm">Conexión establecida. Lista para inhalar ideas.</p>
+                <p class="italic text-stone-500 text-sm">Conexión con Gemini 3 establecida.</p>
             </div>
             <div class="relative flex gap-2">
                 <input type="text" id="user-input" placeholder="Escribe un mensaje..." 
-                    class="w-full bg-white/5 border border-white/10 rounded-full py-4 px-6 focus:outline-none focus:border-white/30">
-                <button onclick="sendMessage()" class="bg-white text-black px-8 py-2 rounded-full font-bold hover:bg-stone-200 transition-all active:scale-95">
+                    class="w-full bg-white/5 border border-white/10 rounded-full py-4 px-6 focus:outline-none">
+                <button onclick="sendMessage()" class="bg-white text-black px-8 py-2 rounded-full font-bold hover:bg-stone-200">
                     Enviar
                 </button>
             </div>
@@ -29,7 +29,7 @@
     </div>
 
     <script>
-        // Tu clave confirmada (sin espacios)
+        // Tu clave de la captura 22.20.59
         const API_KEY = "AIzaSyBTq2H7XOpjOS3fcylVYwBYOv-CwGGvuUE"; 
 
         async function sendMessage() {
@@ -46,8 +46,8 @@
             box.scrollTop = box.scrollHeight;
 
             try {
-                // CAMBIO CLAVE: Usamos v1beta para máxima compatibilidad con modelos nuevos
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+                // CAMBIO CRÍTICO: Usamos el modelo exacto de tu captura: gemini-3-flash-preview
+                const url = `https://generativelanguage.googleapis.com/v1alpha/models/gemini-3-flash-preview:generateContent?key=${API_KEY}`;
                 
                 const response = await fetch(url, {
                     method: 'POST',
@@ -62,10 +62,9 @@
 
                 const aiText = data.candidates[0].content.parts[0].text;
                 document.getElementById(loadingId).remove();
-                box.innerHTML += `<div class="text-left"><p class="inline-block bg-stone-800 p-3 rounded-2xl mb-4 text-stone-200 text-sm shadow-lg">${aiText}</p></div>`;
+                box.innerHTML += `<div class="text-left"><p class="inline-block bg-stone-800 p-3 rounded-2xl mb-4 text-stone-200 text-sm">${aiText}</p></div>`;
             } catch (error) {
-                if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
-                box.innerHTML += `<p class="text-red-400 text-xs italic">Ajustando conexión: ${error.message}</p>`;
+                if(document.getElementById(loadingId)) document.getElementById(loadingId).innerText = "Error: " + error.message;
             }
             box.scrollTop = box.scrollHeight;
         }
